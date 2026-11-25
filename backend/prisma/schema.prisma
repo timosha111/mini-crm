@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+}
+
+enum DealStatus {
+  NEW
+  IN_PROGRESS
+  SUCCESS
+  LOST
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(MANAGER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deals Deal[]
+  notes Note[]
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String
+  email     String?
+  company   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deals Deal[]
+  notes Note[]
+}
+
+model Deal {
+  id        Int        @id @default(autoincrement())
+  title     String
+  amount    Float      @default(0)
+  status    DealStatus @default(NEW)
+  clientId  Int
+  managerId Int?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  client  Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  manager User?  @relation(fields: [managerId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([clientId])
+  @@index([managerId])
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  text      String
+  clientId  Int
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  author User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+}

@@ -1,0 +1,12 @@
+{
+  "name": "mini-crm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Мини-CRM для учёта клиентов и сделок (учебный проект)",
+  "scripts": {
+    "install:all": "npm --prefix backend install && npm --prefix frontend install",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "test": "npm --prefix backend test"
+  }
+}
